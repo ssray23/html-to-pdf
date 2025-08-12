@@ -58,10 +58,19 @@ def convert_to_pdf():
         return jsonify({"error": "HTML file not found"}), 404
     
     try:
+        print(f"Converting {html_path} to {pdf_path}")  # Debug log
         asyncio.run(html_to_pdf(html_path, pdf_path))
+        
+        # Verify PDF was created
+        if not os.path.exists(pdf_path):
+            return jsonify({"error": "PDF file was not created"}), 500
+            
+        print(f"PDF created successfully: {pdf_path}")  # Debug log
         return jsonify({"success": True, "pdf_filename": pdf_filename})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        error_msg = f"Conversion failed: {str(e)}"
+        print(error_msg)  # Debug log
+        return jsonify({"error": error_msg}), 500
 
 @app.route("/download/<filename>")
 def download_pdf(filename):
@@ -79,51 +88,68 @@ def preview_html(filename):
 
 async def html_to_pdf(html_file, pdf_file):
     async with async_playwright() as p:
-        browser = await p.chromium.launch()
+        browser = await p.chromium.launch(
+            headless=True,
+            args=[
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--no-first-run',
+                '--no-zygote',
+                '--single-process',
+                '--disable-web-security'
+            ]
+        )
         page = await browser.new_page()
         
-        # Load the HTML file
-        await page.goto(f"file:///{os.path.abspath(html_file)}")
-        
-        # Wait for page to load completely
-        await page.wait_for_load_state('networkidle')
-        
-        # Get the actual content dimensions
-        dimensions = await page.evaluate("""
-            () => {
-                const body = document.body;
-                const html = document.documentElement;
-                
-                const width = Math.max(
-                    body.scrollWidth, body.offsetWidth, 
-                    html.clientWidth, html.scrollWidth, html.offsetWidth
-                );
-                const height = Math.max(
-                    body.scrollHeight, body.offsetHeight, 
-                    html.clientHeight, html.scrollHeight, html.offsetHeight
-                );
-                
-                return { width, height };
-            }
-        """)
-        
-        # Set viewport to match content
-        await page.set_viewport_size({
-            "width": dimensions["width"],
-            "height": dimensions["height"]
-        })
-        
-        # Generate PDF with exact dimensions - no page breaks
-        await page.pdf(
-            path=pdf_file,
-            width=f"{dimensions['width']}px",
-            height=f"{dimensions['height']}px",
-            print_background=True,
-            margin={"top": "0px", "right": "0px", "bottom": "0px", "left": "0px"},
-            prefer_css_page_size=True
-        )
-        
-        await browser.close()
+        try:
+            # Load the HTML file
+            await page.goto(f"file:///{os.path.abspath(html_file)}")
+            
+            # Wait for page to load completely
+            await page.wait_for_load_state('networkidle', timeout=30000)
+            
+            # Get the actual content dimensions
+            dimensions = await page.evaluate("""
+                () => {
+                    const body = document.body;
+                    const html = document.documentElement;
+                    
+                    const width = Math.max(
+                        body.scrollWidth, body.offsetWidth, 
+                        html.clientWidth, html.scrollWidth, html.offsetWidth
+                    );
+                    const height = Math.max(
+                        body.scrollHeight, body.offsetHeight, 
+                        html.clientHeight, html.scrollHeight, html.offsetHeight
+                    );
+                    
+                    return { width, height };
+                }
+            """)
+            
+            # Set viewport to match content
+            await page.set_viewport_size({
+                "width": dimensions["width"],
+                "height": dimensions["height"]
+            })
+            
+            # Generate PDF with exact dimensions - no page breaks
+            await page.pdf(
+                path=pdf_file,
+                width=f"{dimensions['width']}px",
+                height=f"{dimensions['height']}px",
+                print_background=True,
+                margin={"top": "0px", "right": "0px", "bottom": "0px", "left": "0px"},
+                prefer_css_page_size=True
+            )
+            
+        except Exception as e:
+            print(f"PDF conversion error: {str(e)}")
+            raise
+        finally:
+            await browser.close()
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
