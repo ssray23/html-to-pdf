@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HTML to PDF Converter</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-weight: bold;
+            color: #003366; /* CMYK-friendly navy */
+            margin-bottom: 30px;
+        }
+        .upload-section {
+            margin-bottom: 30px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-label {
+            background-color: #0099cc; /* CMYK teal */
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .file-label:hover {
+            background-color: #0077aa;
+        }
+        .action-button {
+            background-color: #ff6600; /* CMYK orange */
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .action-button:hover {
+            background-color: #e65c00;
+        }
+        .action-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .preview-section {
+            margin-top: 30px;
+            border: 2px solid #0099cc;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        .preview-iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+        }
+        .status-message {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status-processing {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .hidden {
+            display: none;
+        }
+        .filename-display {
+            color: #003366;
+            font-weight: bold;
+            margin: 15px 0;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Convert HTML to PDF</h1>
+        
+        <div class="upload-section">
+            {% if not uploaded %}
+                <form method="post" enctype="multipart/form-data" id="uploadForm">
+                    <label for="file" class="file-label">Choose HTML File</label>
+                    <input type="file" name="file" id="file" accept=".html" onchange="this.form.submit()">
+                </form>
+            {% else %}
+                <div class="filename-display">
+                    📄 {{ display_name }}
+                </div>
+                <button type="button" class="action-button" onclick="location.reload()">Upload Different File</button>
+                <button type="button" class="action-button" id="convertBtn" onclick="convertToPdf()">Convert to PDF</button>
+                <button type="button" class="action-button hidden" id="downloadBtn" onclick="downloadPdf()">Download PDF</button>
+            {% endif %}
+        </div>
+
+        <div id="statusMessage" class="status-message hidden"></div>
+
+        {% if uploaded %}
+        <div class="preview-section">
+            <h3 style="color: #003366; margin-bottom: 20px;">Preview:</h3>
+            <iframe src="{{ url_for('preview_html', filename=filename) }}" class="preview-iframe" id="previewFrame"></iframe>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        let pdfFilename = null;
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.classList.remove('hidden');
+        }
+
+        function hideStatus() {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.classList.add('hidden');
+        }
+
+        function convertToPdf() {
+            const convertBtn = document.getElementById('convertBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            
+            // Disable convert button and show processing status
+            convertBtn.disabled = true;
+            convertBtn.textContent = 'Converting...';
+            showStatus('Converting HTML to PDF...', 'processing');
+
+            // Send conversion request
+            fetch('/convert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `filename={{ filename }}&base_name={{ base_name }}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    pdfFilename = data.pdf_filename;
+                    showStatus(`Conversion completed! PDF: ${pdfFilename}`, 'success');
+                    
+                    // Hide convert button and show download button
+                    convertBtn.classList.add('hidden');
+                    downloadBtn.classList.remove('hidden');
+                } else {
+                    showStatus('Error: ' + (data.error || 'Conversion failed'), 'error');
+                    convertBtn.disabled = false;
+                    convertBtn.textContent = 'Convert to PDF';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showStatus('Error: Failed to convert file', 'error');
+                convertBtn.disabled = false;
+                convertBtn.textContent = 'Convert to PDF';
+            });
+        }
+
+        function downloadPdf() {
+            if (pdfFilename) {
+                window.location.href = `/download/${pdfFilename}`;
+                showStatus('PDF download started!', 'success');
+            }
+        }
+
+        // Auto-hide status messages after 5 seconds
+        setInterval(() => {
+            const statusDiv = document.getElementById('statusMessage');
+            if (!statusDiv.classList.contains('hidden')) {
+                setTimeout(() => hideStatus(), 5000);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
