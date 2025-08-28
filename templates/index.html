@@ -1,210 +1,452 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HTML to PDF Converter</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: Helvetica, Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             padding: 20px;
         }
+        
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-family: Helvetica, sans-serif;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 30px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-family: Helvetica, sans-serif;
+        }
+        
+        .form-group input[type="url"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: Helvetica, sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: white;
+            color: #2c3e50;
+        }
+
+        .form-group input[type="url"]::placeholder {
+            color: #9ca3af !important;
+            opacity: 1;
+            font-weight: 400;
+        }
+        
+        .form-group input[type="url"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: Helvetica, sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            text-align: center;
+            gap: 10px;
+        }
+
+        .file-upload-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .file-upload-button:active {
+            transform: translateY(0);
+        }
+
+        .file-upload-text {
+            font-weight: normal;
+            opacity: 0.8;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+            color: #999;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e8ed;
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 20px;
+            font-weight: 500;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            text-align: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+            font-weight: bold;
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 8px 25px rgba(149, 165, 166, 0.4);
+        }
+        
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+            font-weight: 500;
+        }
+        
+        .success {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #363;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .file-info {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .file-info h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+            font-weight: bold;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+            font-weight: 500;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .loading {
+            display: none;
             text-align: center;
             padding: 20px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
         }
-        h1 {
-            font-weight: bold;
-            color: #003366; /* CMYK-friendly navy */
-            margin-bottom: 30px;
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
         }
-        .upload-section {
-            margin-bottom: 30px;
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        input[type="file"] {
-            display: none;
-        }
-        .file-label {
-            background-color: #0099cc; /* CMYK teal */
-            color: white;
-            padding: 15px 30px;
-            border-radius: 50px;
-            cursor: pointer;
-            display: inline-block;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        .file-label:hover {
-            background-color: #0077aa;
-        }
-        .action-button {
-            background-color: #ff6600; /* CMYK orange */
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-            margin: 10px;
-        }
-        .action-button:hover {
-            background-color: #e65c00;
-        }
-        .action-button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        .preview-section {
-            margin-top: 30px;
-            border: 2px solid #0099cc;
-            border-radius: 10px;
-            padding: 20px;
-            background-color: #f0f8ff;
-        }
-        .preview-iframe {
-            width: 100%;
-            height: 600px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: white;
-        }
-        .status-message {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 10px;
-            font-weight: bold;
-        }
-        .status-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .status-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .status-processing {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        .hidden {
-            display: none;
-        }
-        .filename-display {
-            color: #003366;
-            font-weight: bold;
-            margin: 15px 0;
-            font-size: 18px;
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .file-upload-button {
+                flex-direction: column;
+                gap: 5px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Convert HTML to PDF</h1>
+        <div class="header">
+            <h1>HTML to PDF Converter</h1>
+            <p>Convert web pages and HTML files to beautifully formatted PDFs</p>
+        </div>
         
-        <div class="upload-section">
+        <div class="content">
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+            
             {% if not uploaded %}
-                <form method="post" enctype="multipart/form-data" id="uploadForm">
-                    <label for="file" class="file-label">Choose HTML File</label>
-                    <input type="file" name="file" id="file" accept=".html" onchange="this.form.submit()">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="url">Enter Website URL:</label>
+                        <input type="url" id="url" name="url" placeholder="https://example.com">
+                    </div>
+                    
+                    <div class="divider">
+                        <span>OR</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="file">Upload HTML File:</label>
+                        <div class="file-upload-wrapper" onclick="document.getElementById('file').click();">
+                            <input type="file" id="file" name="file" accept=".html,.htm" style="display: none;">
+                            <div class="file-upload-button">
+                                <span>📄 Choose HTML File</span>
+                                <span class="file-upload-text" id="file-text">No file chosen</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn">Process File</button>
                 </form>
             {% else %}
-                <div class="filename-display">
-                    📄 {{ display_name }}
+                <div class="success file-info">
+                    <h3>✓ File Ready for Conversion</h3>
+                    <p><strong>File:</strong> {{ display_name }}</p>
+                    {% if is_url %}
+                        <p><strong>Source:</strong> <a href="{{ original_url }}" target="_blank">{{ original_url }}</a></p>
+                    {% endif %}
                 </div>
-                <button type="button" class="action-button" onclick="window.location.href='/'">Upload Different File</button>
-                <button type="button" class="action-button" id="convertBtn" onclick="convertToPdf()">Convert to PDF</button>
-                <button type="button" class="action-button hidden" id="downloadBtn" onclick="downloadPdf()">Download PDF</button>
+                
+                <form id="convertForm">
+                    <input type="hidden" name="filename" value="{{ filename }}">
+                    <input type="hidden" name="base_name" value="{{ base_name }}">
+                    <input type="hidden" name="is_url" value="{{ is_url }}">
+                    {% if is_url %}
+                        <input type="hidden" name="original_url" value="{{ original_url }}">
+                    {% endif %}
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="clean_output" name="clean_output">
+                        <label for="clean_output">Clean output (remove navigation, ads, etc.)</label>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="btn">Convert to PDF</button>
+                        <a href="{{ url_for('preview_html', filename=filename) }}" target="_blank" class="btn btn-secondary">Preview HTML</a>
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">Convert Another</a>
+                    </div>
+                </form>
+                
+                <div class="loading" id="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Converting to PDF, please wait...</p>
+                </div>
             {% endif %}
         </div>
-
-        <div id="statusMessage" class="status-message hidden"></div>
-
-        {% if uploaded %}
-        <div class="preview-section">
-            <h3 style="color: #003366; margin-bottom: 20px;">Preview:</h3>
-            <iframe src="{{ url_for('preview_html', filename=filename) }}" class="preview-iframe" id="previewFrame"></iframe>
-        </div>
-        {% endif %}
     </div>
-
+    
+    {% if not uploaded %}
     <script>
-        let pdfFilename = null;
-
-        function showStatus(message, type) {
-            const statusDiv = document.getElementById('statusMessage');
-            statusDiv.textContent = message;
-            statusDiv.className = `status-message status-${type}`;
-            statusDiv.classList.remove('hidden');
-        }
-
-        function hideStatus() {
-            const statusDiv = document.getElementById('statusMessage');
-            statusDiv.classList.add('hidden');
-        }
-
-        function convertToPdf() {
-            const convertBtn = document.getElementById('convertBtn');
-            const downloadBtn = document.getElementById('downloadBtn');
+        // File upload functionality
+        document.getElementById('file').addEventListener('change', function(e) {
+            const fileText = document.getElementById('file-text');
+            if (e.target.files.length > 0) {
+                fileText.textContent = e.target.files[0].name;
+                fileText.style.opacity = '1';
+            } else {
+                fileText.textContent = 'No file chosen';
+                fileText.style.opacity = '0.8';
+            }
+        });
+    </script>
+    {% endif %}
+    
+    {% if uploaded %}
+    <script>
+        document.getElementById('convertForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            // Disable convert button and show processing status
-            convertBtn.disabled = true;
-            convertBtn.textContent = 'Converting...';
-            showStatus('Converting HTML to PDF...', 'processing');
-
-            // Send conversion request
+            const loading = document.getElementById('loading');
+            const form = e.target;
+            
+            loading.style.display = 'block';
+            
+            const formData = new FormData(form);
+            formData.append('clean_output', document.getElementById('clean_output').checked);
+            
             fetch('/convert', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `filename={{ filename }}&base_name={{ base_name }}`
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
+                loading.style.display = 'none';
                 if (data.success) {
-                    pdfFilename = data.pdf_filename;
-                    showStatus(`Conversion completed! PDF: ${pdfFilename}`, 'success');
+                    // Create download link and trigger download
+                    const link = document.createElement('a');
+                    link.href = '/download/' + data.pdf_filename;
+                    link.download = data.pdf_filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                     
-                    // Hide convert button and show download button
-                    convertBtn.classList.add('hidden');
-                    downloadBtn.classList.remove('hidden');
+                    // Show success message
+                    const successDiv = document.createElement('div');
+                    successDiv.className = 'success';
+                    successDiv.innerHTML = '<strong>✓ Success!</strong> Your PDF has been generated and downloaded.';
+                    form.parentNode.insertBefore(successDiv, form);
                 } else {
-                    showStatus('Error: ' + (data.error || 'Conversion failed'), 'error');
-                    convertBtn.disabled = false;
-                    convertBtn.textContent = 'Convert to PDF';
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'error';
+                    errorDiv.innerHTML = '<strong>Error:</strong> ' + data.error;
+                    form.parentNode.insertBefore(errorDiv, form);
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                showStatus('Error: Failed to convert file', 'error');
-                convertBtn.disabled = false;
-                convertBtn.textContent = 'Convert to PDF';
+                loading.style.display = 'none';
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error';
+                errorDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                form.parentNode.insertBefore(errorDiv, form);
             });
-        }
-
-        function downloadPdf() {
-            if (pdfFilename) {
-                window.location.href = `/download/${pdfFilename}`;
-                showStatus('PDF download started!', 'success');
-            }
-        }
-
-        // Auto-hide status messages after 5 seconds
-        setInterval(() => {
-            const statusDiv = document.getElementById('statusMessage');
-            if (!statusDiv.classList.contains('hidden')) {
-                setTimeout(() => hideStatus(), 5000);
-            }
-        }, 1000);
+        });
     </script>
+    {% endif %}
 </body>
 </html>

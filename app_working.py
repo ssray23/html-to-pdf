@@ -297,8 +297,8 @@ def convert_to_pdf():
                 source_for_pdf = temp_clean_file
             else:
                  return jsonify({"error": "Could not find any content to clean."}), 500
-        # Always use the downloaded HTML file, never the original URL
-        # This ensures consistent processing for both URLs and uploaded files
+        elif is_url:
+            source_for_pdf = original_url # Use the original URL for a perfect replica
 
         # Run the Playwright conversion
         asyncio.run(html_to_pdf_playwright(source_for_pdf, pdf_path))
