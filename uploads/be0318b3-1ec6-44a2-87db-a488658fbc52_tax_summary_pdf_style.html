@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Property Tax Reimbursement Summary</title>
+      <style>
+         @page {
+         size: A4;
+         margin: 1in;
+         }
+         body {
+         font-family: Helvetica, Arial, sans-serif;
+         font-size: 14pt;
+         line-height: 1.4;
+         color: #333;
+         max-width: 8.5in;
+         margin: 0 auto;
+         padding: 20px;
+         background: white;
+         }
+         .header {
+         text-align: center;
+         margin-bottom: 30px;
+         border-bottom: 2px solid #333;
+         padding-bottom: 15px;
+         }
+         h1 {
+         font-size: 18pt;
+         font-weight: bold;
+         margin-bottom: 10px;
+         color: #2c3e50;
+         }
+         h2 {
+         font-size: 16pt;
+         font-weight: bold;
+         margin: 25px 0 15px 0;
+         color: #34495e;
+         border-bottom: 1px solid #bdc3c7;
+         padding-bottom: 5px;
+         }
+         .property-info {
+         background-color: #f8f9fa;
+         padding: 15px;
+         border-left: 4px solid #3498db;
+         margin-bottom: 25px;
+         }
+         table {
+         width: 100%;
+         border-collapse: separate;
+         border-spacing: 0;
+         margin: 20px 0;
+         font-size: 11pt;
+         border-radius: 8px;
+         overflow: hidden;
+         border: 0.5px solid black; /* changed from #bdc3c7 */
+         }
+         th {
+         background-color: #34495e;
+         color: white;
+         padding: 12px 8px;
+         text-align: left;
+         font-weight: 700 !important;
+         border: 0.5px solid black; /* changed from #2c3e50 */
+         }
+         td {
+         padding: 10px 8px;
+         border: 1px solid black; /* changed from #bdc3c7 */
+         text-align: left;
+         }
+         th:first-child {
+         border-top-left-radius: 0.5px;
+         }
+         th:last-child {
+         border-top-right-radius: 0.5px;
+         }
+         .amount-col {
+         text-align: right;
+         font-weight: 500;
+         }
+         /* Alternating row colors */
+         tr:nth-child(even) {
+         background-color: #f8f9fa;
+         }
+         tr:nth-child(odd) {
+         background-color: white;
+         }
+         .summary-table tr:nth-child(even) {
+         background-color: #e8f4f8;
+         }
+         .summary-table tr:nth-child(odd) {
+         background-color: #f0f8ff;
+         }
+         .total-row {
+         font-weight: bold;
+         background-color: #2c3e50 !important;
+         color: white;
+         }
+         .subtotal-row {
+         font-weight: bold;
+         background-color: #34495e !important;
+         color: white;
+         }
+         .notes {
+         background-color: #fff3cd;
+         border: 1px solid #ffeaa7;
+         border-radius: 5px;
+         padding: 15px;
+         margin-top: 25px;
+         }
+         .notes h3 {
+         margin-top: 0;
+         color: #856404;
+         font-size: 15pt;
+         }
+         .notes ul {
+         margin: 10px 0;
+         padding-left: 20px;
+         }
+         .notes li {
+         margin-bottom: 8px;
+         }
+         @media print {
+         body {
+         margin: 0;
+         padding: 15px;
+         }
+         .notes {
+         break-inside: avoid;
+         }
+         table {
+         break-inside: avoid;
+         }
+         }
+      </style>
+   </head>
+   <body>
+      <div class="header">
+         <h1>Property Tax Reimbursement Summary</h1>
+         <div class="property-info">
+            <strong>Premises:</strong> P-123 (34), Raja S.C. Mullick Road, Kolkata - 700 084<br>
+            <strong>Assessee No:</strong> 311101000549<br>
+            <strong>Claimant:</strong> Lena Roy<br>
+            <strong>Tenant:</strong> Punjab National Bank (formerly United Bank of India)<br>
+            <strong>Document Date:</strong> August 26, 2025
+         </div>
+      </div>
+      <h2>Detailed Tax Breakup - Full Occupancy Period (1989-2017)</h2>
+      <table>
+         <thead>
+            <tr>
+               <th>Period</th>
+               <th>Quarterly Tax Rate</th>
+               <th>Number of Quarters</th>
+               <th class="amount-col">Total Amount (Rs.)</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>2/1989-90 to 3/1994-95</td>
+               <td>Rs. 1,283</td>
+               <td>22 quarters</td>
+               <td class="amount-col">Rs. 28,226.00</td>
+            </tr>
+            <tr>
+               <td>4/1994-95 to 1/1995-96</td>
+               <td>Rs. 10,616</td>
+               <td>2 quarters</td>
+               <td class="amount-col">Rs. 21,232.00</td>
+            </tr>
+            <tr>
+               <td>2/1995-96 to 3/1999-2000</td>
+               <td>Rs. 10,616</td>
+               <td>18 quarters</td>
+               <td class="amount-col">Rs. 1,91,088.00</td>
+            </tr>
+            <tr>
+               <td>4/1999-2000 to 1/2001-02</td>
+               <td>Rs. 12,378</td>
+               <td>6 quarters</td>
+               <td class="amount-col">Rs. 76,428.00</td>
+            </tr>
+            <tr>
+               <td>2/2001-02 to 3/2004-05</td>
+               <td>Rs. 12,378</td>
+               <td>14 quarters</td>
+               <td class="amount-col">Rs. 1,78,332.00</td>
+            </tr>
+            <tr>
+               <td>4/2004-05 to 1/2007-08</td>
+               <td>Rs. 15,285</td>
+               <td>10 quarters</td>
+               <td class="amount-col">Rs. 1,52,850.00</td>
+            </tr>
+            <tr>
+               <td>2/2007-08 to 3/2009-10</td>
+               <td>Rs. 15,285</td>
+               <td>10 quarters</td>
+               <td class="amount-col">Rs. 1,52,850.00</td>
+            </tr>
+            <tr>
+               <td>4/2009-10 to 1/2013-14</td>
+               <td>Rs. 18,342</td>
+               <td>14 quarters</td>
+               <td class="amount-col">Rs. 2,56,788.00</td>
+            </tr>
+            <tr>
+               <td>2/2013-14 to 3/2014-15</td>
+               <td>Rs. 18,342</td>
+               <td>6 quarters</td>
+               <td class="amount-col">Rs. 1,10,052.00</td>
+            </tr>
+            <tr>
+               <td>4/2014-15 to 4/2016-17</td>
+               <td>Rs. 22,011</td>
+               <td>6 quarters</td>
+               <td class="amount-col">Rs. 1,32,066.00</td>
+            </tr>
+            <tr>
+               <td>1/2017-18 to 2/2017-18</td>
+               <td>Rs. 26,413</td>
+               <td>2 quarters</td>
+               <td class="amount-col">Rs. 52,826.00</td>
+            </tr>
+            <tr class="subtotal-row">
+               <td colspan="3"><strong>Subtotal - Full Occupancy Period</strong></td>
+               <td class="amount-col"><strong>Rs. 13,52,738.00</strong></td>
+            </tr>
+         </tbody>
+      </table>
+      <h2>Reduced Occupancy Period - Ground Floor Only (2017-2026)</h2>
+      <table>
+         <thead>
+            <tr>
+               <th>Period</th>
+               <th>Quarterly Tax Rate</th>
+               <th>Number of Quarters</th>
+               <th class="amount-col">Total Amount (Rs.)</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>3/2017-18 to 2/2025-26</td>
+               <td>Rs. 17,902</td>
+               <td>30 quarters</td>
+               <td class="amount-col">Rs. 5,37,060.00</td>
+            </tr>
+         </tbody>
+      </table>
+      <h2>Final Summary</h2>
+      <table class="summary-table">
+         <thead>
+            <tr>
+               <th>Component</th>
+               <th class="amount-col">Amount (Rs.)</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td>Full Occupancy Period (1989-2017)</td>
+               <td class="amount-col">Rs. 13,52,738.00</td>
+            </tr>
+            <tr>
+               <td>Ground Floor Only (2017-2026)</td>
+               <td class="amount-col">Rs. 5,37,060.00</td>
+            </tr>
+            <tr class="total-row">
+               <td><strong>TOTAL CLAIMED REIMBURSEMENT</strong></td>
+               <td class="amount-col"><strong>Rs. 18,89,798.00</strong></td>
+            </tr>
+         </tbody>
+      </table>
+      <div class="notes">
+         <h3>Important Notes</h3>
+         <ul>
+            <li><strong>Occupancy Changes:</strong> Bank occupied both ground floor (629 sq.ft.) and 1st floor (1818 sq.ft.) from October 1986 to August 2017. From September 2017 onwards, only ground floor portion (359 sq.ft.) is occupied.</li>
+            <li><strong>Tax Calculation Basis:</strong> All amounts include surcharge as applicable and are based on Kolkata Municipal Corporation's official assessments following the Lok Adalat settlement dated April 21, 2018.</li>
+            <li><strong>Lease Agreement:</strong> As per the lease terms, the bank is responsible for proportionate property tax reimbursement for occupied portions.</li>
+            <li><strong>Current Status:</strong> Lease expires on October 30, 2025. No reimbursement has been received by the property owner as of the letter date (August 26, 2025).</li>
+            <li><strong>Legal Settlement:</strong> Property tax dispute was resolved through Lok Adalat with Rs. 7,00,000 deposited by the assessee on May 12, 2018.</li>
+            <li><strong>Tax Escalation:</strong> Property tax rates show significant increases over the decades, with the steepest rise occurring post-2014.</li>
+         </ul>
+      </div>
+   </body>
+</html>

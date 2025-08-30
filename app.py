@@ -426,6 +426,7 @@ async def html_to_pdf_exact_replica(source, pdf_file, margin_inches=0.3):
                         width: 100% !important;
                         height: 100% !important;
                         overflow: visible !important;
+                        background: white !important;
                         -webkit-print-color-adjust: exact !important;
                         color-adjust: exact !important;
                         print-color-adjust: exact !important;
@@ -648,7 +649,6 @@ def convert_to_pdf():
         filename = request.form.get("filename")
         base_name = request.form.get("base_name")
         use_screenshot = request.form.get("use_screenshot") == "true"
-        clean_output = request.form.get("clean_output") == "true"
         
         print(f"Convert request: filename={filename}, use_screenshot={use_screenshot}")
         
