@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limitless web data infrastructure for AI & BI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 18px;
+            line-height: 1.7;
+            color: #2c2c2c;
+            background: #ffffff;
+            width: 100%;
+            min-height: 100vh;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        h1 {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #1a1a1a;
+            margin: 0 0 30px 0;
+            text-align: left;
+            border-bottom: 3px solid #e0e0e0;
+            padding-bottom: 20px;
+        }
+        
+        h2 {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 26px;
+            font-weight: 600;
+            margin: 40px 0 20px 0;
+            color: #333;
+            line-height: 1.3;
+        }
+        
+        h3 {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            margin: 30px 0 15px 0;
+            color: #333;
+            line-height: 1.3;
+        }
+        
+        h4, h5, h6 {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-weight: 600;
+            margin: 25px 0 12px 0;
+            color: #333;
+            line-height: 1.3;
+        }
+        
+        p {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            margin: 0 0 20px 0;
+            text-align: justify;
+            hyphens: auto;
+        }
+        
+        p:first-of-type {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 20px;
+            line-height: 1.6;
+            margin: 0 0 25px 0;
+            color: #1a1a1a;
+        }
+        
+        ul, ol {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            margin: 0 0 10px 0;
+            line-height: 1.6;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 30px auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        figure {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        figcaption {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 16px;
+            color: #666666;
+            font-style: italic;
+            margin: 12px 0 0 0;
+            text-align: center;
+        }
+        
+        table {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            font-size: 16px;
+            border: 2px solid #000000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            border: 1px solid #000000;
+            padding: 12px 15px;
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        th {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            border: 1px solid #000000;
+        }
+        
+        tr {
+            border: 1px solid #000000;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        blockquote {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            margin: 25px 0;
+            padding: 20px 25px;
+            border-left: 5px solid #007acc;
+            background-color: #f8f9fa;
+            font-style: italic;
+            color: #555555;
+            font-size: 19px;
+        }
+        
+        a {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #007acc;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        
+        a:hover {
+            border-bottom-color: #007acc;
+        }
+        
+        strong, b {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        em, i {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-style: italic;
+        }
+        
+        code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background-color: #f1f1f1;
+            padding: 3px 8px;
+            font-size: 16px;
+            border-radius: 4px;
+            color: #d63384;
+        }
+        
+        pre {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background-color: #f8f8f8;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 15px;
+            border: 1px solid #e1e1e1;
+        }
+        
+        hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ccc, transparent);
+            margin: 40px 0;
+        }
+        
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            body {
+                font-family: 'Helvetica', 'Arial', sans-serif;
+                font-size: 16px;
+                line-height: 1.5;
+                padding: 40px !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: none !important;
+                min-height: auto !important;
+            }
+            
+            .container {
+                max-width: none !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+            
+            h1 {
+                font-family: 'Helvetica', 'Arial', sans-serif;
+                font-size: 28px;
+                margin-bottom: 25px;
+            }
+            
+            h2 {
+                font-family: 'Helvetica', 'Arial', sans-serif;
+                font-size: 22px;
+                margin: 30px 0 15px 0;
+            }
+            
+            p {
+                font-family: 'Helvetica', 'Arial', sans-serif;
+                margin-bottom: 15px;
+            }
+            
+            img {
+                margin: 20px auto;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                page-break-inside: avoid;
+            }
+            
+            table {
+                font-family: 'Helvetica', 'Arial', sans-serif;
+                border: 2px solid #000000 !important;
+            }
+            
+            th, td {
+                font-family: 'Helvetica', 'Arial', sans-serif;
+                border: 1px solid #000000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Limitless web data infrastructure for AI & BI</h1>
+        
+<section class="hero bg-dark pt-1 pt-xl-10 pt-lg-5 pb-5 is_dark" style="">
+<div class="container flex-md-row">
+<div class="row justify-content-center justify-content-md-center text-center text-md-center align-items-center">
+<div class="d-flex flex-column align-items-start align-items-md-center">
+<div class="d-flex g-2 g-md-3 g-xl-2 justify-content-center justify-content-md-center social_approval mt-2 mt-md-3 mb-2 mb-md-3"><a class="brd_tp top" data-content="4.6 out of five star rating on Trustpilot" href="https://www.trustpilot.com/review/brightdata.com" rel="noopener noreferrer" target="_blank" title="4.6 out of five star rating on Trustpilot"><img alt="4.6 out of five star rating on Trustpilot" src="https://brightdata.com/wp-content/themes/brightdata/assets/images/social/tp_short_dark.svg?ver=16052024"/></a><a class="brd_tp top" data-content="4.6 out of 5 stars rating on G2" href="https://www.g2.com/products/bright-data/reviews" rel="noopener noreferrer" target="_blank" title="4.6 out of 5 stars rating on G2"><img alt="4.6 out of 5 stars rating on G2" src="https://brightdata.com/wp-content/themes/brightdata/assets/images/social/g2_short_dark.svg?ver=16052024"/></a><a class="brd_tp top" data-content="4.8 out of 5 stars rating on Capterra" href="https://www.capterra.com/p/208755/Bright-Data" rel="noopener noreferrer" target="_blank" title="4.8 out of 5 stars rating on Capterra"><img alt="4.8 out of 5 stars rating on Capterra" src="https://brightdata.com/wp-content/themes/brightdata/assets/images/social/capterra_short_dark.svg?ver=16052024"/></a></div><div class="pre_title d-flex color-gray_900 align-items-center justify-content-center justify-content-md-center hero_pre_title mb-1 mb-lg-2" style="max-width: 640px;"></div><h1 class="h1 mb-1 w-100" style="max-width: 640px;">Limitless web data infrastructure for AI &amp; BI</h1><div class="body_l color-white_200 mt-2 mt-lg-1 mb-5 mb-lg-8" style="max-width: 820px;"><p>Discover, access, extract, and interact with any public website. Get structured, reliable, real-time or historical data at petabyte-scale. Ready for any model, pipeline, or workflow.</p>
+</div> <div class="hero_after_btns">
+<div class="ccard d-flex align-items-center g-1 body_s mt-2 justify-content-center justify-content-md-start color-white_200"><svg role="presentation"><use href="#ic_ccard_light"></use></svg>No credit card required</div> </div>
+<ul class="left_border one_line_two_col body_s_bold ticked px-0 color-white_300 pt-8 pt-lg-5 px-0 px-lg-6 pt-lg-10 pb-lg-5"><li><div class="br_left"></div>Instant<br/> scraper APIs</li><li><div class="br_left"></div>Unstoppable browsing <br/> infrastructure</li><li><div class="br_left"></div>AI-ready<br/> BI-ready datasets</li><li><div class="br_left"></div>150M+ proxy IPs <br/>from 195 countries</li></ul> </div>
+<div class="">
+</div>
+</div>
+</div>
+</section>
+<div id="template_195454">
+<section class="gallery bg-dark py-4 is_dark">
+<div class="container text-center">
+<div class="image_titles text-center">
+<h2 class="pre_title mb-4 color-gray_400 d-block">Trusted by 20,000+ customers worldwide</h2> </div>
+<div class="slider_container gallery_1"><div class="marquee marquee_gallery_1"> <div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="30" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20190%2030'%3E%3C/svg%3E" width="190"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="28" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20143%2028'%3E%3C/svg%3E" width="143"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="20" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20103%2020'%3E%3C/svg%3E" width="103"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="36" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2090%2036'%3E%3C/svg%3E" width="90"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="30" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20147%2030'%3E%3C/svg%3E" width="147"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="22" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20102%2022'%3E%3C/svg%3E" width="102"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="20" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20162%2020'%3E%3C/svg%3E" width="162"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="20" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2082%2020'%3E%3C/svg%3E" width="82"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="40" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20130%2040'%3E%3C/svg%3E" width="130"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="40" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2095%2040'%3E%3C/svg%3E" width="95"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="40" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20122%2040'%3E%3C/svg%3E" width="122"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="24" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20106%2024'%3E%3C/svg%3E" width="106"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center slider_item">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="40" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2098%2040'%3E%3C/svg%3E" width="98"/></div> </div>
+</div>
+</div></div> </div>
+</section>
+
+</div>
+<div class="toggled_line_item" id="template_331086"><section class="line_item bg-dark pt-8 toggled is_dark">
+<div class="container" style="">
+<div class="row flex-column-reverse flex-md-row-reverse align-items-center">
+<div class="col-md-6 d-flex justify-content-md-end d-flex mt-3 mt-md-0 line_item__image justify-content-center justify-content-md-start"><img alt="Article image" height="360" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20540%20360'%3E%3C/svg%3E" width="540"/><img alt="Article image" height="213" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20277%20213'%3E%3C/svg%3E" width="277"/></div> <div class="body_l color-white entry line_item__content col-md-6 m-0">
+<div class="d-flex align-items-center mb-1 mb-lg-2" style=""><h3 class="h3 color-white m-0">
+                        Data Feeds
+                    </h3></div><div class="body_l color-white entry" style=""><p>Easily access structured, high-quality web data on demand.  Real-time, pre-collected or historical – tailored to your needs.</p>
+</div><ul class="p-0 pt-3 secondary_1 trans body small color-white_200 ticked px-0"><li>5B+ records regularly refreshed; 120+ domains</li><li>Automated data quality validation checks</li><li>Seamless API and webhook integration</li><li>Minimize engineering effort required</li></ul><a class="btn d-flex d-md-inline-flex btn--capsule fw mt-3 on_dark btn--brand btn--small with_borders body_m_bold" href="#popup-155639" target="" title=""><span>Get started</span><svg class="cta_ic" height="10" viewbox="0 0 10 10" width="10">
+<g fill-rule="evenodd"><path class="cta_ic-line_path" d="M0 5h7">
+</path><path class="cta_ic-tip_path" d="M1 1l4 4-4 4"></path></g>
+</svg></a> </div>
+</div>
+</div></section>
+<section class="line_item bg-dark py-8 toggled sec is_dark">
+<div class="container" style="">
+<div class="row flex-column-reverse flex-md-row-reverse align-items-center">
+<div class="col-md-6 d-flex justify-content-md-end d-flex mt-3 mt-md-0 line_item__image justify-content-center justify-content-md-start"><img alt="Article image" height="377" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20540%20377'%3E%3C/svg%3E" width="540"/><img alt="Article image" height="211" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20277%20211'%3E%3C/svg%3E" width="277"/></div> <div class="body_l color-white entry line_item__content col-md-6 m-0">
+<div class="d-flex align-items-center mb-1 mb-lg-2" style=""><h3 class="h3 color-white m-0">
+                        Web Access APIs
+                    </h3></div><div class="body_l color-white entry" style=""><p>Build and scale advanced scraping operations effortlessly. Search, crawl and navigate reliably – without being blocked.</p>
+</div><ul class="p-0 pt-3 secondary_1 trans body small color-white_200 ticked px-0"><li>Automatically avoid anti-bot measures and CAPTCHAs</li><li>Advanced JS rendering and remote browsers</li><li>High performance with near-zero downtime</li><li>Minimize setup and maintenance required</li></ul><a class="btn d-flex d-md-inline-flex btn--capsule fw mt-3 on_dark btn--brand btn--small with_borders body_m_bold" href="#popup-155639" target="" title=""><span>Get started</span><svg class="cta_ic" height="10" viewbox="0 0 10 10" width="10">
+<g fill-rule="evenodd"><path class="cta_ic-line_path" d="M0 5h7">
+</path><path class="cta_ic-tip_path" d="M1 1l4 4-4 4"></path></g>
+</svg></a> </div>
+</div>
+</div></section>
+<section class="line_item bg-dark pb-8 toggled third is_dark">
+<div class="container" style="">
+<div class="row flex-column-reverse flex-md-row-reverse align-items-center">
+<div class="col-md-6 d-flex justify-content-md-end d-flex mt-3 mt-md-0 line_item__image justify-content-center justify-content-md-start"><img alt="Article image" height="377" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20540%20377'%3E%3C/svg%3E" width="540"/><img alt="Article image" height="213" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20277%20213'%3E%3C/svg%3E" width="277"/></div> <div class="body_l color-white entry line_item__content col-md-6 m-0">
+<div class="d-flex align-items-center mb-1 mb-lg-2" style=""><h3 class="h3 color-white m-0">
+                        Proxy Infrastructure
+                    </h3></div><div class="body_l color-white entry" style=""><p>Leverage the world’s largest proxy network for reliable web data extraction at scale. 100% ethically-sourced and compliant.</p>
+</div><ul class="p-0 pt-3 secondary_1 trans body small color-white_200 ticked px-0"><li>Full control, visibility and enterprise-grade security</li><li>Integrated Proxy Manager and Management APIs</li><li>Optimized routing for speed and reliability</li><li>99.99% uptime and 99.95% success rate</li></ul><a class="btn d-flex d-md-inline-flex btn--capsule fw mt-3 on_dark btn--brand btn--small with_borders body_m_bold" href="#popup-155639" target="" title=""><span>Get started</span><svg class="cta_ic" height="10" viewbox="0 0 10 10" width="10">
+<g fill-rule="evenodd"><path class="cta_ic-line_path" d="M0 5h7">
+</path><path class="cta_ic-tip_path" d="M1 1l4 4-4 4"></path></g>
+</svg></a> </div>
+</div>
+</div></section>
+</div><section class="content bg-dark py-3 py-lg-10 is_ai_slider is_dark">
+<div class="container" style="">
+<div class="grid_border">
+<div class="use_cases_carousel">
+<div aria-label="" class="splide use_cases_splide">
+<div class="mb-4 text-center section_title">
+<div class="pre_title color-grey_300 pb-1">
+        Popular use cases      </div>
+<h2 class="h2">
+<div class="title">
+          AI-ready data for every industry      </div>
+</h2>
+</div>
+<div class="splide_wraper">
+<div class="splide__arrows">
+
+
+</div>
+<div class="splide_wraper__wraper">
+<div class="splide__track py-5">
+<ul class="splide__list">
+<li class="splide__slide d-flex justify-content-center g-1 g-md-2 li_item li_item_1"> <a class="use_case_item p-2 p-md-2 wide" href="/ai">
+<div class="use_case_icon mb-2">
+<svg class="icon_wrapper" role="presentation" style="width: 40px; height: 40px">
+<use href="#data_for_ai_uc"></use>
+</svg>
+</div>
+<h3 class="body_l_bold mb-1">
+                    Data for AI                </h3>
+<div class="body_s link">
+                        Train and fine-tune models, power agents web
+                access, enhance RAG, and fuel industry-specific AI solutions.                    </div>
+</a>
+<a class="use_case_item p-2 p-md-2" href="/use-cases/ecommerce">
+<div class="use_case_icon mb-2">
+<svg class="icon_wrapper" role="presentation" style="width: 40px; height: 40px">
+<use href="#ecommerce_uc"></use>
+</svg>
+</div>
+<h3 class="body_l_bold mb-1">
+                    eCommerce                </h3>
+<div class="body_s link">
+                        Access competitors’ prices, products and review
+                data at scale.                    </div>
+</a>
+<a class="use_case_item p-2 p-md-2" href="/use-cases/social-media-for-marketing">
+<div class="use_case_icon mb-2">
+<svg class="icon_wrapper" role="presentation" style="width: 40px; height: 40px">
+<use href="#marketing_uc"></use>
+</svg>
+</div>
+<h3 class="body_l_bold mb-1">
+                    Marketing                </h3>
+<div class="body_s link">
+                        Master the art of social media marketing with
+                web data.                    </div>
+</a>
+<a class="use_case_item p-2 p-md-2" href="/use-cases/travel">
+<div class="use_case_icon mb-2">
+<svg class="icon_wrapper" role="presentation" style="width: 40px; height: 40px">
+<use href="#travel_uc"></use>
+</svg>
+</div>
+<h3 class="body_l_bold mb-1">
+                    Travel                </h3>
+<div class="body_s link">
+                        Access competitor pricing, hotel availability and
+                flight schedules.                    </div>
+</a>
+</li> <li class="splide__slide d-flex justify-content-center g-1 g-md-2 li_item li_item_1"> <a class="use_case_item p-2 p-md-2" href="/use-cases/market-research">
+<div class="use_case_icon mb-2">
+<svg class="icon_wrapper" role="presentation" style="width: 40px; height: 40px">
+<use href="#market_research_uc"></use>
+</svg>
+</div>
+<h3 class="body_l_bold mb-1">
+                    Market research                </h3>
+<div class="body_s link">
+                        Deeply understand your target audience.                    </div>
+</a>
+<a class="use_case_item p-2 p-md-2" href="/use-cases/serp-tracking">
+<div class="use_case_icon mb-2">
+<svg class="icon_wrapper" role="presentation" style="width: 40px; height: 40px">
+<use href="#serp_tracking_uc"></use>
+</svg>
+</div>
+<h3 class="body_l_bold mb-1">
+                    SERP tracking                </h3>
+<div class="body_s link">
+                        Maximize your SEO impact with real-time SERP
+                ranking data.                    </div>
+</a>
+<a class="use_case_item p-2 p-md-2" href="/use-cases/financial">
+<div class="use_case_icon mb-2">
+<svg class="icon_wrapper" role="presentation" style="width: 40px; height: 40px">
+<use href="#financial_services_uc"></use>
+</svg>
+</div>
+<h3 class="body_l_bold mb-1">
+                    Financial Services                </h3>
+<div class="body_s link">
+                        Gain a competitive edge using high-quality
+                reliable datasets.                    </div>
+</a>
+<a class="use_case_item p-2 p-md-2" href="/use-cases/data-security">
+<div class="use_case_icon mb-2">
+<svg class="icon_wrapper" role="presentation" style="width: 40px; height: 40px">
+<use href="#data_security_uc"></use>
+</svg>
+</div>
+<h3 class="body_l_bold mb-1">
+                    Data Security                </h3>
+<div class="body_s link">
+                        Fight fraud, mitigate risk, &amp; achieve real-time
+                visibility.                    </div>
+</a>
+</li> <li class="splide__slide d-flex justify-content-center g-1 g-md-2 li_item li_item_1"> <a class="use_case_item p-2 p-md-2" href="/use-cases/real-estate">
+<div class="use_case_icon mb-2">
+<svg class="icon_wrapper" role="presentation" style="width: 40px; height: 40px">
+<use href="#real_estate_uc"></use>
+</svg>
+</div>
+<h3 class="body_l_bold mb-1">
+                    Real Estate                </h3>
+<div class="body_s link">
+                        Predict how prices will move, anticipate market
+                trends.                    </div>
+</a>
+<a class="use_case_item p-2 p-md-2" href="/use-cases/adtech">
+<div class="use_case_icon mb-2">
+<svg class="icon_wrapper" role="presentation" style="width: 40px; height: 40px">
+<use href="#ad_tech_uc"></use>
+</svg>
+</div>
+<h3 class="body_l_bold mb-1">
+                    Ad Tech                </h3>
+<div class="body_s link">
+                        Protect your brand, verify ads, &amp; conduct real-time ad
+                intelligence.                    </div>
+</a>
+<a class="use_case_item p-2 p-md-2" href="/use-cases/brand-protection">
+<div class="use_case_icon mb-2">
+<svg class="icon_wrapper" role="presentation" style="width: 40px; height: 40px">
+<use href="#brand_protection_uc"></use>
+</svg>
+</div>
+<h3 class="body_l_bold mb-1">
+                    Brand Protection                </h3>
+<div class="body_s link">
+                        Power your brand protection and anti-piracy
+                efforts.                    </div>
+</a>
+</li> </ul>
+<div class="splide__pagination"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+
+
+
+
+<!-- End Testimonials section -->
+
+<div id="template_298410"><section class="line_item bg-dark py-4 py-md-5 py-lg-7 py-xl-8 support is_dark">
+<div class="container" style="">
+<div class="row flex-column-reverse flex-md-row-reverse align-items-center">
+<div class="col-md-6 d-flex justify-content-md-end d-flex mt-3 mt-md-0 line_item__image justify-content-center justify-content-md-start"><img alt="Article image" height="461" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20580%20461'%3E%3C/svg%3E" width="580"/></div> <div class="body entry line_item__content col-md-6 m-0">
+<div class="d-flex align-items-center mb-1 mb-xl-2" style=""><div class="pre_title color-gray_300 m-0">
+                        SUPPORT
+                    </div></div><h2 class="h2 mb-lg-2" style="max-width: 460px;">
+              We’ll support you every step of the way
+            </h2><div class="body entry" style=""><p>Talk to a web data expert to get the most out of your data</p>
+</div><ul class="pt-1 pb-3 pb-xl-4 dark small color-main ticked px-0"><li>Rated #1 by customers on G2</li><li>Under 10 minutes average response time</li><li>24/7 support anytime, anywhere</li></ul> </div>
+</div>
+</div></section>
+<section class="line_item bg-dark py-4 py-md-5 py-lg-7 compliance is_dark">
+<div class="container" style="">
+<div class="row flex-column-reverse flex-md-row align-items-center">
+<div class="col-md-6 d-flex mt-3 mt-md-0 line_item__image justify-content-center justify-content-md-start"><img alt="Article image" height="421" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20555%20421'%3E%3C/svg%3E" width="555"/></div> <div class="body entry line_item__content col-md-6 m-0">
+<div class="d-flex align-items-center mb-1 mb-xl-2" style=""><div class="pre_title color-gray_300 m-0">
+                        COMPLIANCE
+                    </div></div><h2 class="h2 mb-lg-2" style="max-width: 514px;">
+              Leading the way in ethical web data collection
+            </h2><div class="body entry" style=""><p>We have set the <a href="/trustcenter">gold standard for ethical and compliant web data practices.</a> Our peer network is built on trust, with every member personally opting in and the guarantee of zero personal data collection. We champion the collection of only publicly available data, backed by an industry-leading Know Your Customer process and a transparent Acceptable Use Policy. Our global, multilingual Compliance &amp; Ethics team, the first of its kind, ensures we stay ahead of regulatory changes and best practices.</p>
+</div> </div>
+</div>
+</div></section>
+<section class="card_container bg-dark pt-md-3 pb-4 pb-md-5 pb-lg-6 pb-xl-8 is_dark">
+<div class="container">
+<h2 class="h3 mb-2 mb-md-3 mb-xl-4 color-gray_300 text-md-center">Unwavering commitment to security and privacy</h2> <div class="row container_inner bg-dark_2 br-8 py-md-1 py-lg-0">
+<div class="card_wrapper col-12 col-md-6 col-lg-3 pt-2 pb-1 px-4 px-md-5 px-lg-3 px-xl-4 py-md-3"><div class="card d-flex flex-md-column"><div class="card__image mb-0 mr-3 mb-md-3 mr-md-0">
+<img alt="Article image" height="40" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2034%2040'%3E%3C/svg%3E" width="34"/></div><div class="card__content d-flex flex-column h-100"><p>Collaborations with <strong>security giants</strong> like VirusTotal, Avast, and AVG</p>
+</div></div></div><div class="card_wrapper col-12 col-md-6 col-lg-3 pt-2 pb-1 px-4 px-md-5 px-lg-3 px-xl-4 py-md-3"><div class="card d-flex flex-md-column"><div class="card__image mb-0 mr-3 mb-md-3 mr-md-0">
+<img alt="Article image" height="40" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2034%2040'%3E%3C/svg%3E" width="34"/></div><div class="card__content d-flex flex-column h-100"><p>Monitoring of 30+ billion domains, blocking unapproved content and ensuring domain health</p>
+</div></div></div><div class="card_wrapper col-12 col-md-6 col-lg-3 pt-2 pb-1 px-4 px-md-5 px-lg-3 px-xl-4 py-md-3"><div class="card d-flex flex-md-column"><div class="card__image mb-0 mr-3 mb-md-3 mr-md-0">
+<img alt="Article image" height="40" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2034%2040'%3E%3C/svg%3E" width="34"/></div><div class="card__content d-flex flex-column h-100"><p>Adherence to <strong>GDPR, CCPA, and SEC</strong> regulations, with a dedicated Privacy Center for user empowerment</p>
+</div></div></div><div class="card_wrapper col-12 col-md-6 col-lg-3 pt-2 pb-1 px-4 px-md-5 px-lg-3 px-xl-4 py-md-3"><div class="card d-flex flex-md-column"><div class="card__image mb-0 mr-3 mb-md-3 mr-md-0">
+<img alt="Article image" height="40" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2034%2040'%3E%3C/svg%3E" width="34"/></div><div class="card__content d-flex flex-column h-100"><p>Proactive abuse prevention through global partnerships and multiple reporting channels</p>
+</div></div></div> </div>
+</div>
+</section>
+</div>
+<section class="gallery bg-dark pb-4 pb-lg-10 d-none d-md-block brdinitiative_logos is_dark">
+<div class="container text-left">
+<div class="image_titles text-left">
+</div>
+<div class="row align-items-center gallery_4 justify-content-center justify-content-md-between"> <div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="28" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20147%2028'%3E%3C/svg%3E" width="147"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="35" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20114%2035'%3E%3C/svg%3E" width="114"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="37" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20108%2037'%3E%3C/svg%3E" width="108"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="32" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20117%2032'%3E%3C/svg%3E" width="117"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="42" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20154%2042'%3E%3C/svg%3E" width="154"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="35" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2081%2035'%3E%3C/svg%3E" width="81"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="56" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2040%2056'%3E%3C/svg%3E" width="40"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="31" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20170%2031'%3E%3C/svg%3E" width="170"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="39" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2058%2039'%3E%3C/svg%3E" width="58"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="36" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20122%2036'%3E%3C/svg%3E" width="122"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="44" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2096%2044'%3E%3C/svg%3E" width="96"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="20" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20147%2020'%3E%3C/svg%3E" width="147"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="39" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20157%2039'%3E%3C/svg%3E" width="157"/></div> </div>
+</div>
+<div class="image_wrapper d-flex justify-content-center col-auto col-md-auto col-lg-auto my-4">
+<div class="image bg- h-100">
+<div class="image__image"><img alt="Article image" height="50" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2092%2050'%3E%3C/svg%3E" width="92"/></div> </div>
+</div>
+</div> </div>
+</section>
+
+
+
+    </div>
+</body>
+</html>

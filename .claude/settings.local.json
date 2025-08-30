@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "WebFetch(domain:stackoverflow.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

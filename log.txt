@@ -1,0 +1,36 @@
+ * Serving Flask app 'app'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.253.80.84:5000
+Press CTRL+C to quit
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 675-094-913
+127.0.0.1 - - [28/Aug/2025 14:03:33] "POST / HTTP/1.1" 200 -
+127.0.0.1 - - [28/Aug/2025 14:03:37] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [28/Aug/2025 14:03:48] "POST / HTTP/1.1" 200 -
+127.0.0.1 - - [28/Aug/2025 14:04:11] "POST /convert HTTP/1.1" 200 -
+127.0.0.1 - - [28/Aug/2025 14:04:12] "GET /download/suddha_ray_cv_clean.pdf HTTP/1.1" 200 -
+127.0.0.1 - - [28/Aug/2025 14:04:46] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [28/Aug/2025 14:04:58] "POST / HTTP/1.1" 200 -
+127.0.0.1 - - [28/Aug/2025 14:05:17] "POST /convert HTTP/1.1" 200 -
+127.0.0.1 - - [28/Aug/2025 14:05:17] "GET /download/seriouseats.com.pdf HTTP/1.1" 200 -
+Creating exact replica PDF of uploaded HTML file...
+Content boundaries: width=793.6875px, height=2805.34375px, leftOffset=243.15625px
+Scrolled to eliminate left offset: 243.15625px
+PDF dimensions: 8.27" x 29.22"
+Single-page exact replica PDF generated successfully
+Downloading URL: https://www.seriouseats.com/the-burger-lab-in-search-of-the-best-lamb-burgers
+Parsing HTML content...
+Extracting title...
+Extracted title: The Burger Lab: In Search Of The Best Lamb Burgers
+Extracting article content...
+Cleaning article content...
+Creating clean HTML...
+Successfully created clean HTML
+Creating exact replica PDF of uploaded HTML file...
+Content boundaries: width=1280px, height=5367.875px, leftOffset=0px
+PDF dimensions: 13.33" x 55.92"
+Single-page exact replica PDF generated successfully

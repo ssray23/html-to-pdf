@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML to PDF Converter</title>
+    <title>Article to PDF Converter</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +12,7 @@
         }
         
         body {
-            font-family: Helvetica, Arial, sans-serif;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 16px;
             line-height: 1.6;
             color: #333;
@@ -39,9 +39,9 @@
         
         .header h1 {
             font-size: 2.5rem;
-            font-weight: bold;
+            font-weight: 700;
             margin-bottom: 10px;
-            font-family: Helvetica, sans-serif;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
         }
         
         .header p {
@@ -60,11 +60,11 @@
         
         .form-group label {
             display: block;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 1rem;
             color: #2c3e50;
             margin-bottom: 8px;
-            font-family: Helvetica, sans-serif;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
         }
         
         .form-group input[type="url"] {
@@ -73,7 +73,7 @@
             border: 2px solid #e1e8ed;
             border-radius: 8px;
             font-size: 1rem;
-            font-family: Helvetica, sans-serif;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
             font-weight: 500;
             transition: all 0.3s ease;
             background: white;
@@ -109,8 +109,8 @@
             border: 2px solid transparent;
             border-radius: 8px;
             font-size: 1rem;
-            font-family: Helvetica, sans-serif;
-            font-weight: bold;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
@@ -128,8 +128,8 @@
         }
 
         .file-upload-text {
-            font-weight: normal;
-            opacity: 0.8;
+            font-weight: 400;
+            opacity: 0.9;
         }
         
         .divider {
@@ -138,6 +138,7 @@
             position: relative;
             color: #999;
             font-family: "Helvetica Neue", Helvetica, sans-serif;
+            font-weight: 500;
         }
         
         .divider::before {
@@ -165,7 +166,7 @@
             border-radius: 8px;
             border: none;
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 600;
             font-family: "Helvetica Neue", Helvetica, sans-serif;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -185,7 +186,7 @@
         .btn-secondary {
             background: linear-gradient(135deg, #95a5a6, #7f8c8d);
             box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
-            font-weight: bold;
+            font-weight: 600;
         }
         
         .btn-secondary:hover {
@@ -210,33 +211,60 @@
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
         }
         
         .file-info {
             background: #f8f9fa;
-            border: 2px dashed #dee2e6;
+            border: 2px solid #e9ecef;
             border-radius: 8px;
-            padding: 20px;
+            padding: 25px;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .file-info h3 {
             color: #2c3e50;
             margin-bottom: 10px;
             font-family: "Helvetica Neue", Helvetica, sans-serif;
-            font-weight: bold;
+            font-weight: 600;
+        }
+
+        .clean-info {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .clean-info h4 {
+            color: #155724;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .clean-info p {
+            color: #155724;
+            font-size: 14px;
+            margin: 0;
         }
         
         .checkbox-group {
             display: flex;
             align-items: center;
-            margin: 20px 0;
+            margin: 25px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
         }
         
         .checkbox-group input[type="checkbox"] {
-            margin-right: 10px;
-            transform: scale(1.2);
+            margin-right: 12px;
+            transform: scale(1.3);
         }
         
         .checkbox-group label {
@@ -244,6 +272,7 @@
             cursor: pointer;
             font-family: "Helvetica Neue", Helvetica, sans-serif;
             font-weight: 500;
+            color: #2c3e50;
         }
         
         .button-group {
@@ -255,7 +284,7 @@
         .loading {
             display: none;
             text-align: center;
-            padding: 20px;
+            padding: 30px;
             font-family: "Helvetica Neue", Helvetica, sans-serif;
         }
         
@@ -266,7 +295,7 @@
             width: 30px;
             height: 30px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+            margin: 0 auto 15px;
         }
         
         @keyframes spin {
@@ -310,8 +339,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>HTML to PDF Converter</h1>
-            <p>Convert web pages and HTML files to beautifully formatted PDFs</p>
+            <h1>Article to PDF Converter</h1>
+            <p>Extract clean, formatted articles from web pages as beautiful PDFs</p>
         </div>
         
         <div class="content">
@@ -320,10 +349,15 @@
             {% endif %}
             
             {% if not uploaded %}
+                <div class="clean-info">
+                    <h4>📖 Instapaper-Style Clean Extraction</h4>
+                    <p>Creates a distraction-free reading experience with just the title and article content</p>
+                </div>
+                
                 <form method="POST" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="url">Enter Website URL:</label>
-                        <input type="url" id="url" name="url" placeholder="https://example.com">
+                        <label for="url">Enter Article URL:</label>
+                        <input type="url" id="url" name="url" placeholder="https://example.com/article">
                     </div>
                     
                     <div class="divider">
@@ -341,15 +375,20 @@
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn">Process File</button>
+                    <button type="submit" class="btn">Process Article</button>
                 </form>
             {% else %}
                 <div class="success file-info">
-                    <h3>✓ File Ready for Conversion</h3>
+                    <h3>✓ Article Ready for Conversion</h3>
                     <p><strong>File:</strong> {{ display_name }}</p>
                     {% if is_url %}
                         <p><strong>Source:</strong> <a href="{{ original_url }}" target="_blank">{{ original_url }}</a></p>
                     {% endif %}
+                </div>
+                
+                <div class="clean-info">
+                    <h4>📖 Instapaper-Style Output (Recommended)</h4>
+                    <p>Creates a distraction-free PDF with clean typography - perfect for focused reading</p>
                 </div>
                 
                 <form id="convertForm">
@@ -361,20 +400,20 @@
                     {% endif %}
                     
                     <div class="checkbox-group">
-                        <input type="checkbox" id="clean_output" name="clean_output">
-                        <label for="clean_output">Clean output (remove navigation, ads, etc.)</label>
+                        <input type="checkbox" id="clean_output" name="clean_output" checked>
+                        <label for="clean_output">Instapaper-style extraction (removes all clutter, keeps only article content)</label>
                     </div>
                     
                     <div class="button-group">
                         <button type="submit" class="btn">Convert to PDF</button>
-                        <a href="{{ url_for('preview_html', filename=filename) }}" target="_blank" class="btn btn-secondary">Preview HTML</a>
+                        <a href="{{ url_for('preview_html', filename=filename) }}" target="_blank" class="btn btn-secondary">Preview Original</a>
                         <a href="{{ url_for('index') }}" class="btn btn-secondary">Convert Another</a>
                     </div>
                 </form>
                 
                 <div class="loading" id="loading">
                     <div class="loading-spinner"></div>
-                    <p>Converting to PDF, please wait...</p>
+                    <p><strong>Creating clean, readable PDF...</strong><br>Removing ads, navigation, and clutter</p>
                 </div>
             {% endif %}
         </div>
@@ -428,7 +467,7 @@
                     // Show success message
                     const successDiv = document.createElement('div');
                     successDiv.className = 'success';
-                    successDiv.innerHTML = '<strong>✓ Success!</strong> Your PDF has been generated and downloaded.';
+                    successDiv.innerHTML = '<strong>✓ Success!</strong> Your clean Instapaper-style PDF has been generated and downloaded.';
                     form.parentNode.insertBefore(successDiv, form);
                 } else {
                     // Show error message

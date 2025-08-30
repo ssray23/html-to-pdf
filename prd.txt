@@ -1,0 +1,16 @@
+1) responsive ajax based front end / optimistic UX design
+2) User can either input a html file or a url (not both at same time)
+3) The app's main objectives are:
+    - Create PDF from HTML file or a url
+    - For HTML file, 
+        - app  should create a single page PDF with margings of 2 cm on top, botton, left and right between the edge of the page and content
+        - the pdf output should look exactly the same as the html file
+        - Helvetica font only
+    - For URL input
+        - app  should create a single page PDF with margings of 2 cm on top, botton, left and right between the edge of the page and content
+        - The app must extract the Title of the page behind the URL
+        - The app must extract the main body text of the page behind the URL
+        - The app must extract the images of the page behind the URL but these images must be part of the main body/article matter No ads strictly.
+        - the app must create a pdf with the title on the top in big Helvetica bold font followed by the main body text, neatly formatted in paras with images inline with the text as it appeared on the url page
+        - the pdf must not contain any other elements from the page behind the url
+
