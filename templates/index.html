@@ -274,6 +274,65 @@
             font-weight: 500;
             color: #2c3e50;
         }
+
+        /* Radio button styling for conversion method */
+        .method-group {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .method-group h4 {
+            color: #2c3e50;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .radio-option:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 12px;
+            margin-top: 2px;
+            transform: scale(1.2);
+        }
+
+        .radio-option-content {
+            flex: 1;
+        }
+
+        .radio-option-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+        }
+
+        .radio-option-description {
+            font-size: 14px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+
+        .radio-option.selected {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid #667eea;
+        }
         
         .button-group {
             display: flex;
@@ -333,6 +392,15 @@
                 flex-direction: column;
                 gap: 5px;
             }
+
+            .radio-option {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .radio-option input[type="radio"] {
+                margin-bottom: 8px;
+            }
         }
     </style>
 </head>
@@ -391,7 +459,7 @@
                     <p>Creates a distraction-free PDF with clean typography - perfect for focused reading</p>
                 </div>
                 
-                <form id="convertForm">
+                <form id="convertForm" onsubmit="return false;">
                     <input type="hidden" name="filename" value="{{ filename }}">
                     <input type="hidden" name="base_name" value="{{ base_name }}">
                     <input type="hidden" name="is_url" value="{{ is_url }}">
@@ -403,9 +471,27 @@
                         <input type="checkbox" id="clean_output" name="clean_output" checked>
                         <label for="clean_output">Instapaper-style extraction (removes all clutter, keeps only article content)</label>
                     </div>
+
+                    <div class="method-group">
+                        <h4>🔧 Conversion Method</h4>
+                        <div class="radio-option" onclick="selectMethod('intelligent')">
+                            <input type="radio" id="method_intelligent" name="conversion_method" value="intelligent" checked>
+                            <div class="radio-option-content">
+                                <div class="radio-option-title">🧠 Intelligent Measurement (Recommended)</div>
+                                <div class="radio-option-description">Preserves original styling and text formatting. Creates searchable, selectable text in the PDF. Best for articles with simple layouts.</div>
+                            </div>
+                        </div>
+                        <div class="radio-option" onclick="selectMethod('screenshot')">
+                            <input type="radio" id="method_screenshot" name="conversion_method" value="screenshot">
+                            <div class="radio-option-content">
+                                <div class="radio-option-title">📸 Screenshot Approach</div>
+                                <div class="radio-option-description">Perfect visual fidelity - captures exactly what you see in the browser. Use for complex layouts, special fonts, or when styling is critical.</div>
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="button-group">
-                        <button type="submit" class="btn">Convert to PDF</button>
+                        <button type="button" class="btn" onclick="convertToPDF()">Convert to PDF</button>
                         <a href="{{ url_for('preview_html', filename=filename) }}" target="_blank" class="btn btn-secondary">Preview Original</a>
                         <a href="{{ url_for('index') }}" class="btn btn-secondary">Convert Another</a>
                     </div>
@@ -413,7 +499,7 @@
                 
                 <div class="loading" id="loading">
                     <div class="loading-spinner"></div>
-                    <p><strong>Creating clean, readable PDF...</strong><br>Removing ads, navigation, and clutter</p>
+                    <p id="loading-text"><strong>Creating clean, readable PDF...</strong><br>Removing ads, navigation, and clutter</p>
                 </div>
             {% endif %}
         </div>
@@ -437,24 +523,102 @@
     
     {% if uploaded %}
     <script>
-        document.getElementById('convertForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Method selection functionality
+        function selectMethod(method) {
+            console.log('Selecting method:', method);
+            
+            // Update radio buttons
+            document.getElementById('method_intelligent').checked = (method === 'intelligent');
+            document.getElementById('method_screenshot').checked = (method === 'screenshot');
+            
+            // Update visual selection
+            document.querySelectorAll('.radio-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // More robust selector for the radio options
+            const radioOptions = document.querySelectorAll('.radio-option');
+            if (method === 'intelligent' && radioOptions[0]) {
+                radioOptions[0].classList.add('selected');
+            } else if (method === 'screenshot' && radioOptions[1]) {
+                radioOptions[1].classList.add('selected');
+            }
+
+            // Update loading text based on method
+            const loadingText = document.getElementById('loading-text');
+            if (loadingText) {
+                if (method === 'screenshot') {
+                    loadingText.innerHTML = '<strong>Creating perfect visual replica...</strong><br>Taking high-quality screenshot and embedding in PDF';
+                } else {
+                    loadingText.innerHTML = '<strong>Creating clean, readable PDF...</strong><br>Measuring content and preserving formatting';
+                }
+            }
+        }
+
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize default selection
+            selectMethod('intelligent');
+        });
+
+        // Add click handlers to radio buttons themselves
+        document.getElementById('method_intelligent').addEventListener('change', function() {
+            if (this.checked) selectMethod('intelligent');
+        });
+        
+        document.getElementById('method_screenshot').addEventListener('change', function() {
+            if (this.checked) selectMethod('screenshot');
+        });
+
+        // Conversion function
+        function convertToPDF() {
+            console.log('Convert to PDF clicked');
             
             const loading = document.getElementById('loading');
-            const form = e.target;
+            const form = document.getElementById('convertForm');
+            
+            // Clear any previous error/success messages
+            const existingMessages = document.querySelector('.content').querySelectorAll('.error, .success');
+            existingMessages.forEach(msg => msg.remove());
             
             loading.style.display = 'block';
             
             const formData = new FormData(form);
             formData.append('clean_output', document.getElementById('clean_output').checked);
             
+            // Add the selected conversion method
+            const selectedMethod = document.querySelector('input[name="conversion_method"]:checked').value;
+            formData.append('use_screenshot', selectedMethod === 'screenshot');
+            
+            console.log('Sending request with method:', selectedMethod);
+            console.log('FormData contents:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
+            }
+            
             fetch('/convert', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Response is not JSON - server may be redirecting');
+                }
+                
+                return response.json();
+            })
             .then(data => {
+                console.log('Response data:', data);
                 loading.style.display = 'none';
+                
                 if (data.success) {
                     // Create download link and trigger download
                     const link = document.createElement('a');
@@ -464,26 +628,33 @@
                     link.click();
                     document.body.removeChild(link);
                     
-                    // Show success message
+                    // Show success message with method info
                     const successDiv = document.createElement('div');
                     successDiv.className = 'success';
-                    successDiv.innerHTML = '<strong>✓ Success!</strong> Your clean Instapaper-style PDF has been generated and downloaded.';
+                    successDiv.innerHTML = '<strong>✓ Success!</strong> ' + data.message + ' - PDF generated and downloaded.';
                     form.parentNode.insertBefore(successDiv, form);
                 } else {
                     // Show error message
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'error';
-                    errorDiv.innerHTML = '<strong>Error:</strong> ' + data.error;
+                    errorDiv.innerHTML = '<strong>Error:</strong> ' + (data.error || 'Unknown error occurred');
                     form.parentNode.insertBefore(errorDiv, form);
                 }
             })
             .catch(error => {
+                console.error('Fetch error:', error);
                 loading.style.display = 'none';
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'error';
-                errorDiv.innerHTML = '<strong>Error:</strong> ' + error.message;
+                errorDiv.innerHTML = '<strong>Error:</strong> ' + error.message + '<br><small>Check browser console for details</small>';
                 form.parentNode.insertBefore(errorDiv, form);
             });
+        }
+
+        document.getElementById('convertForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Form submitted - preventing default');
+            convertToPDF();
         });
     </script>
     {% endif %}

@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 import re
 from urllib.parse import urljoin
+import base64
 
 app = Flask(__name__)
 
@@ -242,15 +243,14 @@ def create_clean_html_template(content, title="Document"):
 
 #################################################################################
 
+import os
+import base64
+import asyncio
+from playwright.async_api import async_playwright
+
 async def html_to_pdf_exact_replica(source, pdf_file, margin_inches=0.3):
     """
-    Creates a single-page PDF with exact 0.3" margins by wrapping content in a positioned container.
-    Uses a different approach: create a wrapper div with exact positioning.
-    
-    Args:
-        source: URL or file path to convert
-        pdf_file: Output PDF file path
-        margin_inches: Margin in inches from edge of page (default: 0.3)
+    Intelligent approach with better width detection and content fitting.
     """
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
@@ -267,98 +267,152 @@ async def html_to_pdf_exact_replica(source, pdf_file, margin_inches=0.3):
             await page.wait_for_timeout(3000)
             await page.wait_for_function("document.fonts.ready")
 
-            # STEP 1: Get the ORIGINAL content dimensions
-            original_dimensions = await page.evaluate("""() => {
-                const body = document.body;
-                const bodyRect = body.getBoundingClientRect();
-                const scrollWidth = body.scrollWidth;
-                const scrollHeight = body.scrollHeight;
-                const offsetWidth = body.offsetWidth;
-                const offsetHeight = body.offsetHeight;
+            # STEP 1: Set a reasonable viewport for content measurement
+            await page.set_viewport_size({"width": 1200, "height": 800})
+            await page.wait_for_timeout(1000)
+
+            # STEP 2: Get precise content measurements using bounding box approach
+            actual_dimensions = await page.evaluate("""() => {
+                // Remove any fixed positioning or absolute elements that might skew measurements
+                const fixedElements = document.querySelectorAll('[style*="position: fixed"], [style*="position: absolute"]');
+                fixedElements.forEach(el => {
+                    if (el.style.position === 'fixed' || el.style.position === 'absolute') {
+                        el.style.display = 'none';
+                    }
+                });
+
+                // Method 1: Find actual content boundaries by measuring all visible elements
+                let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                let hasContent = false;
                 
-                console.log('Body measurements:', {
-                    rect: bodyRect.width + 'x' + bodyRect.height,
-                    scroll: scrollWidth + 'x' + scrollHeight,
-                    offset: offsetWidth + 'x' + offsetHeight
+                const allElements = document.querySelectorAll('*');
+                allElements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    const style = window.getComputedStyle(el);
+                    
+                    // Only consider visible elements with actual content
+                    if (rect.width > 0 && rect.height > 0 && 
+                        style.display !== 'none' && 
+                        style.visibility !== 'hidden' &&
+                        style.opacity !== '0') {
+                        
+                        minX = Math.min(minX, rect.left);
+                        minY = Math.min(minY, rect.top);
+                        maxX = Math.max(maxX, rect.right);
+                        maxY = Math.max(maxY, rect.bottom);
+                        hasContent = true;
+                    }
                 });
                 
-                const naturalWidth = Math.max(bodyRect.width, offsetWidth);
-                const naturalHeight = Math.max(bodyRect.height, offsetHeight, scrollHeight);
+                let contentWidth, contentHeight;
+                
+                if (hasContent && minX !== Infinity) {
+                    // Use the actual content bounding box
+                    contentWidth = maxX - minX;
+                    contentHeight = maxY - minY;
+                    console.log('Using content bounding box method');
+                    console.log('Content bounds:', minX, minY, maxX, maxY);
+                } else {
+                    // Fallback to container-based measurement
+                    const container = document.querySelector('.container') || 
+                                    document.querySelector('main') || 
+                                    document.querySelector('.content') ||
+                                    document.body;
+                    
+                    if (container) {
+                        const rect = container.getBoundingClientRect();
+                        contentWidth = rect.width;
+                        contentHeight = Math.max(container.scrollHeight, rect.height);
+                        console.log('Using container fallback:', container.className || container.tagName);
+                    }
+                }
+                
+                // Apply reasonable constraints
+                contentWidth = Math.min(Math.max(contentWidth || 400, 400), 800);
+                contentHeight = Math.max(contentHeight || 300, 300);
+                
+                console.log('Final content dimensions:', contentWidth + 'px x ' + contentHeight + 'px');
                 
                 return {
-                    width: Math.ceil(naturalWidth),
-                    height: Math.ceil(naturalHeight)
+                    width: Math.ceil(contentWidth),
+                    height: Math.ceil(contentHeight)
                 };
             }""")
 
-            print(f"ORIGINAL HTML content: {original_dimensions['width']}px x {original_dimensions['height']}px")
+            print(f"MEASURED content: {actual_dimensions['width']}px x {actual_dimensions['height']}px")
 
-            # STEP 2: Wrap content in a positioned container with exact margins
-            await page.evaluate(f"""() => {{
-                // Create wrapper div with exact margin positioning
-                const wrapper = document.createElement('div');
-                wrapper.style.cssText = `
-                    position: absolute;
-                    top: {margin_inches * 72}pt;
-                    left: {margin_inches * 72}pt;
-                    width: {original_dimensions['width']}px;
-                    height: auto;
-                    margin: 0;
-                    padding: 0;
-                    box-sizing: border-box;
-                `;
-                
-                // Move all body content into wrapper
-                while (document.body.firstChild) {{
-                    wrapper.appendChild(document.body.firstChild);
-                }}
-                
-                // Clear body and add wrapper
-                document.body.innerHTML = '';
-                document.body.appendChild(wrapper);
-                
-                // Reset body completely
-                document.body.style.cssText = `
-                    margin: 0;
-                    padding: 0;
-                    width: 100%;
-                    height: 100%;
-                    position: relative;
-                    overflow: visible;
-                `;
-                
-                console.log('Content wrapped with exact positioning');
-            }}""")
+            # STEP 3: Calculate PDF dimensions with reasonable constraints
+            content_width_inches = actual_dimensions['width'] / 96  # 96 DPI standard
+            content_height_inches = actual_dimensions['height'] / 96
+            
+            # Ensure reasonable page sizes (A4-ish max width)
+            max_width_inches = 8.5  # Standard letter width
+            if content_width_inches > max_width_inches:
+                scale_factor = max_width_inches / content_width_inches
+                content_width_inches = max_width_inches
+                content_height_inches *= scale_factor
+                print(f"Scaled down by factor: {scale_factor:.3f}")
+            
+            pdf_width_inches = content_width_inches + (2 * margin_inches)
+            pdf_height_inches = content_height_inches + (2 * margin_inches)
+            
+            print(f"Content: {content_width_inches:.3f}\" x {content_height_inches:.3f}\"")
+            print(f"PDF target: {pdf_width_inches:.3f}\" x {pdf_height_inches:.3f}\"")
 
-            # STEP 3: Calculate PDF dimensions using POINTS (more precise for PDF)
-            margin_points = margin_inches * 72  # 72 points per inch
-            content_width_points = original_dimensions['width'] * 72 / 96  # Convert px to points
-            content_height_points = original_dimensions['height'] * 72 / 96
+            # STEP 4: Set viewport to match our target content size
+            target_viewport_width = int(content_width_inches * 96)
+            target_viewport_height = int(content_height_inches * 96)
             
-            pdf_width_points = content_width_points + (2 * margin_points)
-            pdf_height_points = content_height_points + (2 * margin_points)
-            
-            pdf_width_inches = pdf_width_points / 72
-            pdf_height_inches = pdf_height_points / 72
-            
-            print(f"=== PRECISE POINT CALCULATIONS ===")
-            print(f"Content: {original_dimensions['width']}px x {original_dimensions['height']}px")
-            print(f"Content in points: {content_width_points:.1f}pt x {content_height_points:.1f}pt")
-            print(f"Margin: {margin_inches}\" = {margin_points}pt")
-            print(f"PDF: {pdf_width_points:.1f}pt x {pdf_height_points:.1f}pt")
-            print(f"PDF: {pdf_width_inches:.3f}\" x {pdf_height_inches:.3f}\"")
-            print(f"Wrapper positioned at: {margin_points}pt from top/left")
-            print("=================================")
-
-            # STEP 4: Set viewport to accommodate the wrapper
             await page.set_viewport_size({
-                "width": int(pdf_width_points * 96 / 72),  # Convert back to pixels for viewport
-                "height": max(800, int(pdf_height_points * 96 / 72))
+                "width": target_viewport_width,
+                "height": target_viewport_height
             })
 
-            await page.wait_for_timeout(1000)
+            # STEP 5: Apply precise margin and positioning
+            await page.evaluate(f"""() => {{
+                // Create a wrapper div to control exact positioning
+                const body = document.body;
+                const allContent = Array.from(body.children);
+                
+                // Create wrapper
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'absolute';
+                wrapper.style.top = '{margin_inches}in';
+                wrapper.style.left = '{margin_inches}in';
+                wrapper.style.width = '{content_width_inches}in';
+                wrapper.style.height = 'auto';
+                wrapper.style.boxSizing = 'border-box';
+                wrapper.style.overflow = 'visible';
+                
+                // Move all content into wrapper
+                allContent.forEach(child => {{
+                    wrapper.appendChild(child);
+                }});
+                
+                // Clear body and add wrapper
+                body.innerHTML = '';
+                body.appendChild(wrapper);
+                
+                // Set body styles
+                body.style.margin = '0';
+                body.style.padding = '0';
+                body.style.width = '{pdf_width_inches}in';
+                body.style.height = '{pdf_height_inches}in';
+                body.style.position = 'relative';
+                body.style.overflow = 'hidden';
+                
+                // Set html styles
+                document.documentElement.style.margin = '0';
+                document.documentElement.style.padding = '0';
+                document.documentElement.style.width = '{pdf_width_inches}in';
+                document.documentElement.style.height = '{pdf_height_inches}in';
+                
+                console.log('Applied precise positioning with wrapper approach');
+            }}""")
 
-            # STEP 5: Apply minimal print styles - just prevent page breaks
+            await page.wait_for_timeout(2000)
+
+            # STEP 6: Apply print styles
             await page.add_style_tag(content=f'''
                 @media print {{
                     @page {{ 
@@ -369,19 +423,24 @@ async def html_to_pdf_exact_replica(source, pdf_file, margin_inches=0.3):
                     html, body {{
                         margin: 0 !important;
                         padding: 0 !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                        overflow: visible !important;
                         -webkit-print-color-adjust: exact !important;
                         color-adjust: exact !important;
                         print-color-adjust: exact !important;
                     }}
                     
-                    /* Prevent page breaks */
+                    .container, main, .content {{
+                        box-shadow: none !important;
+                        border-radius: 0 !important;
+                        max-width: none !important;
+                        overflow: visible !important;
+                    }}
+                    
                     * {{
                         page-break-inside: avoid !important;
                         break-inside: avoid !important;
-                        page-break-after: avoid !important;
-                        break-after: avoid !important;
-                        page-break-before: avoid !important;
-                        break-before: avoid !important;
                         -webkit-print-color-adjust: exact !important;
                         color-adjust: exact !important;
                         print-color-adjust: exact !important;
@@ -391,26 +450,24 @@ async def html_to_pdf_exact_replica(source, pdf_file, margin_inches=0.3):
 
             await page.wait_for_timeout(1000)
 
-            # STEP 6: Generate PDF with ZERO margins (wrapper handles positioning)
+            # STEP 7: Generate PDF
             await page.pdf(
                 path=pdf_file,
                 width=f"{pdf_width_inches:.6f}in",
                 height=f"{pdf_height_inches:.6f}in",
                 print_background=True,
                 margin={"top": "0in", "right": "0in", "bottom": "0in", "left": "0in"},
-                prefer_css_page_size=False,
+                prefer_css_page_size=True,
                 display_header_footer=False,
                 page_ranges="1",
                 scale=1.0,
                 format=None
             )
             
-            # Verify the PDF was created
             if os.path.exists(pdf_file) and os.path.getsize(pdf_file) > 0:
-                print(f"✓ WRAPPER-BASED PDF generated successfully!")
+                print(f"✓ INTELLIGENT PDF generated successfully!")
                 print(f"✓ PDF dimensions: {pdf_width_inches:.3f}\" x {pdf_height_inches:.3f}\"")
-                print(f"✓ Content wrapped and positioned with exact {margin_inches}\" margins")
-                print(f"✓ Wrapper approach eliminates Playwright margin inconsistencies")
+                return True
             else:
                 raise Exception("PDF file was not created or is empty")
             
@@ -421,17 +478,179 @@ async def html_to_pdf_exact_replica(source, pdf_file, margin_inches=0.3):
             await browser.close()
 
 
-# Flask route remains the same
+async def html_to_pdf_screenshot_approach(source, pdf_file, margin_inches=0.3):
+    """
+    Fixed screenshot approach with proper error handling and imports.
+    """
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        
+        try:
+            # Navigate to source
+            if source.startswith('http://') or source.startswith('https://'):
+                await page.goto(source, wait_until='networkidle', timeout=30000)
+            else:
+                await page.goto(f"file:///{os.path.abspath(source)}", wait_until='networkidle', timeout=30000)
+
+            await page.wait_for_timeout(3000)
+            await page.wait_for_function("document.fonts.ready")
+
+            # Remove fixed/absolute positioned elements that might interfere
+            await page.evaluate("""() => {
+                const fixedElements = document.querySelectorAll('[style*="position: fixed"], [style*="position: absolute"]');
+                fixedElements.forEach(el => {
+                    if (el.style.position === 'fixed' || el.style.position === 'absolute') {
+                        el.style.display = 'none';
+                    }
+                });
+            }""")
+
+            # Get content dimensions from main container
+            dimensions = await page.evaluate("""() => {
+                const container = document.querySelector('.container') || 
+                                document.querySelector('main') || 
+                                document.querySelector('.content') ||
+                                document.body;
+                
+                let width, height;
+                
+                if (container && container !== document.body) {
+                    const rect = container.getBoundingClientRect();
+                    width = Math.min(rect.width, 800); // Reasonable max width
+                    height = Math.max(container.scrollHeight, rect.height);
+                } else {
+                    width = Math.min(document.body.scrollWidth, document.body.offsetWidth, 800);
+                    height = Math.max(document.body.scrollHeight, document.body.offsetHeight);
+                }
+                
+                return {
+                    width: Math.max(width, 400),  // Minimum width
+                    height: Math.max(height, 300) // Minimum height
+                };
+            }""")
+            
+            print(f"Screenshot dimensions: {dimensions['width']}px x {dimensions['height']}px")
+            
+            # Set viewport to content size
+            await page.set_viewport_size({
+                "width": dimensions['width'],
+                "height": dimensions['height']
+            })
+            
+            await page.wait_for_timeout(1000)
+            
+            # Take high-quality screenshot
+            screenshot_buffer = await page.screenshot(
+                type='png',
+                full_page=True,
+                clip={
+                    'x': 0,
+                    'y': 0,
+                    'width': dimensions['width'],
+                    'height': dimensions['height']
+                }
+            )
+            
+            # Calculate PDF dimensions
+            content_width_inches = dimensions['width'] / 96
+            content_height_inches = dimensions['height'] / 96
+            pdf_width_inches = content_width_inches + (2 * margin_inches)
+            pdf_height_inches = content_height_inches + (2 * margin_inches)
+            
+            print(f"PDF size: {pdf_width_inches:.3f}\" x {pdf_height_inches:.3f}\"")
+            
+            # Create HTML with embedded image
+            try:
+                image_data = base64.b64encode(screenshot_buffer).decode('utf-8')
+            except Exception as e:
+                raise Exception(f"Failed to encode screenshot: {str(e)}")
+            
+            html_content = f'''<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @page {{
+            size: {pdf_width_inches:.6f}in {pdf_height_inches:.6f}in;
+            margin: 0;
+        }}
+        body {{
+            margin: {margin_inches}in;
+            padding: 0;
+            width: calc(100% - {margin_inches * 2}in);
+            height: calc(100% - {margin_inches * 2}in);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }}
+        img {{
+            width: {content_width_inches:.6f}in;
+            height: {content_height_inches:.6f}in;
+            object-fit: contain;
+            display: block;
+        }}
+    </style>
+</head>
+<body>
+    <img src="data:image/png;base64,{image_data}" alt="Page content" />
+</body>
+</html>'''
+            
+            # Create temporary HTML file
+            temp_html = pdf_file.replace('.pdf', '_temp.html')
+            try:
+                with open(temp_html, 'w', encoding='utf-8') as f:
+                    f.write(html_content)
+            except Exception as e:
+                raise Exception(f"Failed to write temporary HTML: {str(e)}")
+            
+            # Generate PDF from the image-based HTML
+            await page.goto(f"file:///{os.path.abspath(temp_html)}", wait_until='networkidle')
+            await page.wait_for_timeout(1000)
+            
+            await page.pdf(
+                path=pdf_file,
+                width=f"{pdf_width_inches:.6f}in",
+                height=f"{pdf_height_inches:.6f}in",
+                print_background=True,
+                margin={"top": "0in", "right": "0in", "bottom": "0in", "left": "0in"},
+                prefer_css_page_size=True,
+                display_header_footer=False,
+                scale=1.0
+            )
+            
+            # Clean up temp file
+            if os.path.exists(temp_html):
+                try:
+                    os.remove(temp_html)
+                except:
+                    pass  # Don't fail if cleanup fails
+            
+            if os.path.exists(pdf_file) and os.path.getsize(pdf_file) > 0:
+                print(f"✓ SCREENSHOT PDF generated successfully!")
+                return True
+            else:
+                raise Exception("PDF file was not created or is empty")
+            
+        except Exception as e:
+            print(f"Error during screenshot conversion: {str(e)}")
+            raise
+        finally:
+            await browser.close()
+
+
 @app.route("/convert", methods=["POST"])
 def convert_to_pdf():
     """
-    Flask route to convert HTML files to PDF with exact visual replica.
-    Uses wrapper div approach for precise margin control.
+    Updated Flask route with better error handling and method selection.
     """
     try:
         filename = request.form.get("filename")
         base_name = request.form.get("base_name")
-        is_url_derived = request.form.get("is_url") == "true"
+        use_screenshot = request.form.get("use_screenshot") == "true"
+        clean_output = request.form.get("clean_output") == "true"
+        
+        print(f"Convert request: filename={filename}, use_screenshot={use_screenshot}")
         
         if not filename or not base_name:
             return jsonify({"error": "Missing filename or base_name parameter."}), 400
@@ -443,25 +662,45 @@ def convert_to_pdf():
         if not os.path.exists(html_path):
             return jsonify({"error": f"Source HTML file not found: {filename}"}), 404
         
-        print(f"Starting WRAPPER-BASED conversion: {filename} -> {pdf_filename}")
-        print("Approach: Wrap content in positioned div for exact margin control")
+        print(f"Starting conversion: {filename} -> {pdf_filename}")
+        print(f"Method: {'Screenshot' if use_screenshot else 'Intelligent'}")
         
-        # Run the conversion
-        asyncio.run(html_to_pdf_exact_replica(html_path, pdf_path, margin_inches=0.3))
+        try:
+            if use_screenshot:
+                print("Using screenshot-based approach...")
+                asyncio.run(html_to_pdf_screenshot_approach(html_path, pdf_path, margin_inches=0.3))
+                message = "Perfect visual replica using screenshot approach with exact margins"
+            else:
+                print("Using intelligent measurement approach...")
+                asyncio.run(html_to_pdf_exact_replica(html_path, pdf_path, margin_inches=0.3))
+                message = "Intelligent measurement with preserved styling and optimized width"
 
-        # Verify success
-        if not os.path.exists(pdf_path):
-            raise Exception("PDF file was not created")
+            if not os.path.exists(pdf_path) or os.path.getsize(pdf_path) == 0:
+                raise Exception("PDF file was not created or is empty")
+                
+            print(f"✓ Conversion completed: {pdf_filename}")
+            return jsonify({
+                "success": True, 
+                "pdf_filename": pdf_filename,
+                "message": message
+            })
             
-        if os.path.getsize(pdf_path) == 0:
-            raise Exception("PDF file is empty")
+        except Exception as conversion_error:
+            print(f"Conversion error: {str(conversion_error)}")
+            # If screenshot fails, try intelligent as fallback
+            if use_screenshot:
+                print("Screenshot failed, trying intelligent approach as fallback...")
+                try:
+                    asyncio.run(html_to_pdf_exact_replica(html_path, pdf_path, margin_inches=0.3))
+                    return jsonify({
+                        "success": True, 
+                        "pdf_filename": pdf_filename,
+                        "message": "Screenshot failed - used intelligent approach as fallback"
+                    })
+                except:
+                    pass
             
-        print(f"✓ WRAPPER-BASED conversion completed: {pdf_filename}")
-        return jsonify({
-            "success": True, 
-            "pdf_filename": pdf_filename,
-            "message": "Exact visual replica with wrapper-based precise margin control"
-        })
+            raise conversion_error
     
     except Exception as e:
         error_msg = f"PDF conversion failed: {str(e)}"
